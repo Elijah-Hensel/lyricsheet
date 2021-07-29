@@ -6,6 +6,7 @@ import { logoutUser } from "../service/magic";
 import NoteAside from "./note_aside/NoteAside";
 import Note from "./note/Note";
 import Header from "./header/Header";
+import Utility from "./utility/Utility";
 
 const Dashboard = () => {
   const { email } = useContext(UserContext);
@@ -19,10 +20,14 @@ const Dashboard = () => {
     }
   };
   return (
-    <>
+    <div className="App">
       <Header />
-      <NoteAside />
-      <Note />
+      <div className="main-note-container">
+        <NoteAside />
+        <Note />
+        <Utility />
+      </div>
+
       <div className="p-2">
         <div className="d-flex justify-content-end">
           <Button variant="primary" onClick={handleLogOut}>
@@ -31,7 +36,7 @@ const Dashboard = () => {
         </div>
         <h1 className="h1">User: {email}</h1>
       </div>
-    </>
+    </div>
   );
 };
 export default Dashboard;
