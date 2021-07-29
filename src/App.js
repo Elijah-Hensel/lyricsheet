@@ -51,6 +51,10 @@ function App() {
     validateUser();
   }, [user.isLoggedIn]);
 
+  useEffect(() => {
+    user.isLoggedIn ? setAuthUser(true) : setAuthUser(false);
+  }, [user.isLoggedIn]);
+
   async function getAllGrabbedNotesNoCat() {
     try {
       const notes = await grabAllNotesNoCat();
@@ -90,7 +94,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <Router>
-        {user.isLoggedIn && <Redirect to={{ pathname: "/dashboard" }} />}
+        {user.isLoggedIn ? <Redirect to={{ pathname: "/dashboard" }} /> : null}
         <Switch>
           <Route exact path="/" component={Landing} />
           <Route exact path="/login" component={Authenticate} />

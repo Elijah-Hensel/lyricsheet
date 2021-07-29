@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   Button,
   Form,
@@ -12,7 +11,6 @@ const Authenticate = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState("");
   const [error, setError] = useState(null);
-  const history = useHistory();
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -24,7 +22,7 @@ const Authenticate = () => {
     try {
       await loginUser(email);
       setLoading(false);
-      history.replace("/dashboard");
+      window.location.href = "/dashboard";
     } catch (error) {
       setError("Unable to log in");
       console.error(error);
