@@ -66,7 +66,6 @@ async function buildTables() {
             id SERIAL PRIMARY KEY,
             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             content VARCHAR(100) NOT NULL,
-            due_date DATE,
             active BOOLEAN DEFAULT TRUE
           )
             `);

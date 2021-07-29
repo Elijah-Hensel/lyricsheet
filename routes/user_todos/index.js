@@ -4,6 +4,7 @@ const {
   getAllUserTodos,
   getUserTodosById,
   getUserTodosByUserId,
+  createUserTodo
 } = require("../../db/user_todos");
 const userTodosRouter = express.Router();
 
@@ -23,6 +24,30 @@ userTodosRouter.get("/", async (req, res, next) => {
   }
 });
 
+userTodosRouter.post("/", async (req, res, next) => {
+  const { content } = req.body;
+  const todoData = {};
+
+  try {
+    todoData.content = content;
+
+    if (!content) {
+      res.send(next(console.error({ message: "Cannot submit empty todo"})))
+    }
+
+    const newTodo = await createUserTodo(todoData);
+    res.send({
+      message: "Todo successfully created!",
+      newTodo,
+    });
+  } catch ({name, message}) { 
+    next({
+      name: "TodoCreateError",
+      message: "Unable to create Todo"
+    })
+  }
+}
+)
 userTodosRouter.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;

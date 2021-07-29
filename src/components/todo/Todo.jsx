@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -15,23 +15,21 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Todo() {
+export default function Todo({ todo, todos }) {
   const classes = useStyles();
-
+  const [active, setActive] = useState(true);
   return (
-    <Card className={classes.root}>
-      <CardContent className="todo-content">
-        <TodoRadio />
-        <Typography className="todo-text" color="textPrimary">
-          Complete Lyric Sheet
-        </Typography>
-      </CardContent>
-      <CardContent className="todo-content">
-        <TodoRadio />
-        <Typography className="todo-text" color="textPrimary">
-          Come up with sick word for "die"
-        </Typography>
-      </CardContent>
-    </Card>
+    <>
+      {todos && (
+        <Card className={classes.root}>
+          <CardContent className="todo-content">
+            <TodoRadio todo={todo} todos={todos} active={active} setActive={setActive} />
+            <Typography className={todo.active ? "todo-text" : "todo-inactive"} color="textPrimary">
+              {todo.content}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+    </>
   );
 }

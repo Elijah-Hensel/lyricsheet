@@ -1,6 +1,6 @@
 const { client } = require("../index");
 
-async function createUserTodo({ userId, content, active }) {
+async function createUserTodo({user_id, content, active=true}) {
   try {
     const {
       rows: [todo],
@@ -10,7 +10,7 @@ async function createUserTodo({ userId, content, active }) {
         VALUES($1, $2, $3)
         RETURNING *;
       `,
-      [userId, content, active]
+      [user_id, content, active]
     );
     return todo;
   } catch (err) {
@@ -24,10 +24,9 @@ async function getAllUserTodos() {
     const { rows: todos } = await client.query(
       `
         SELECT *
-        FROM user_todos
+        FROM user_todos;
       `
     );
-
     return todos;
   } catch (err) {
     console.error("Could not get all user todos!");

@@ -10,10 +10,12 @@ export default function Utility({
   setTodoActive,
   lookUpActive,
   setLookUpActive,
+  todos,
+  setTodos
 }) {
   return (
     <div className={utilityIsOpen ? "note-utility-container" : "hidden"}>
-      {todoActive && <TodoList />}
+      {todoActive && <TodoList todos={todos} setTodos={setTodos} />}
       {lookUpActive && <LookUp />}
     </div>
   );

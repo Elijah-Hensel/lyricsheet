@@ -1,5 +1,18 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import {
+  Switch,
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+} from "react-router-dom";
+import Spinner from "react-bootstrap/Spinner";
+import { UserContext } from "./context/userContext";
+import { checkUser } from "./service/magic";
+import Authenticate from "./components/Authenticate";
+import Dashboard from "./components/DashBoard";
+import PrivateRoute from "./components/PrivateRoute";
+import Landing from "./components/landing/Landing";
 import NavBar from "./components/NavBar/NavBar";
 import Main from "./components/Main/Main";
 import Header from "./components/header/Header";
@@ -17,8 +30,32 @@ function App() {
   const [lookUpActive, setLookUpActive] = useState(false);
   const [grabbedUsers, setGrabbedUsers] = useState("");
   const [grabbedNotesNoCat, setGrabbedNotesNoCat] = useState("");
-  const [grabbedUserTodos, setGrabbedUserTodos] = useState("");
-  const [user, setUser] = useState();
+  const [todos, setTodos] = useState([]);
+  const [user, setUser] = useState({ isLoggedIn: null, email: "" });
+  const [loading, setLoading] = useState();
+
+  useEffect(() => {
+    grabAllUserTodos()
+      .then(({ todos }) => {
+        setTodos(todos);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const validateUser = async () => {
+      setLoading(true);
+      try {
+        await checkUser(setUser);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    validateUser();
+  }, [user.isLoggedIn]);
 
   async function getAllGrabbedNotesNoCat() {
     try {
@@ -40,26 +77,33 @@ function App() {
     }
   }
 
-  async function getAllGrabbedUserTodos() {
-    try {
-      const todos = await grabAllUserTodos();
-      setGrabbedUserTodos(todos);
-    } catch (err) {
-      console.error("getAllGrabbedUserTodosError");
-      throw err;
-    }
-  }
-
   useEffect(() => {
     getAllGrabbedNotesNoCat();
     getAllGrabbedUsers();
-    getAllGrabbedUserTodos();
   }, [setGrabbedNotesNoCat]);
 
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <Spinner animation="border" />
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
-      {authUser ? (
-        <>
+    <UserContext.Provider value={user}>
+      <Router>
+        {user.isLoggedIn && <Redirect to={{ pathname: "/dashboard" }} />}
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route exact path="/login" component={Authenticate} />
+          <PrivateRoute path="/dashboard" component={Dashboard} />
+        </Switch>
+      </Router>
+      {/* <div className="App">
           <Header
             todoActive={todoActive}
             setTodoActive={setTodoActive}
@@ -78,16 +122,11 @@ function App() {
               setLookUpActive={setLookUpActive}
               utilityIsOpen={utilityIsOpen}
               setUtilityIsOpen={setUtilityIsOpen}
+              todos={todos}
+              setTodos={setTodos}
             />
-          </div>
-        </>
-      ) : (
-        <>
-          <NavBar />
-          <Main />
-        </>
-      )}
-    </div>
+          </div></div> */}
+    </UserContext.Provider>
   );
 }
 

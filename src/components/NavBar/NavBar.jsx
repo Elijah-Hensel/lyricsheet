@@ -18,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function handleClick() {
+  window.location.href = "/login";
+}
+
 export default function IndexHeader() {
   const classes = useStyles();
 
@@ -25,10 +29,10 @@ export default function IndexHeader() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Button className="rgst-btn" color="inherit">
+          <Button onClick={handleClick} className="rgst-btn" color="inherit">
             Register
           </Button>
-          <Button className="lgn-btn" color="primary">
+          <Button onClick={handleClick} className="lgn-btn" color="primary">
             Login
           </Button>
         </Toolbar>

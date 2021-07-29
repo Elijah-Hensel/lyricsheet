@@ -12,3 +12,8 @@
 .todo-text {
   font-size: 1rem;
 }
+
+.todo-inactive {
+  text-decoration: line-through;
+  color: gray !important;
+}
