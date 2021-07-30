@@ -5,6 +5,7 @@
   border: 1px solid #d5d3da;
   border-radius: 10px;
   background-color: #fdfbfb;
+  overflow: scroll;
 }
 
 .hidden {

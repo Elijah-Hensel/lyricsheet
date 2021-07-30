@@ -17,3 +17,9 @@
   text-decoration: line-through;
   color: gray !important;
 }
+
+
+.more-icon-div {
+  float: right !important;
+  margin-left: auto !important;
+}

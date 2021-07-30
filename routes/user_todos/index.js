@@ -4,7 +4,8 @@ const {
   getAllUserTodos,
   getUserTodosById,
   getUserTodosByUserId,
-  createUserTodo
+  createUserTodo,
+  updateUserTodo,
 } = require("../../db/user_todos");
 const userTodosRouter = express.Router();
 
@@ -25,14 +26,16 @@ userTodosRouter.get("/", async (req, res, next) => {
 });
 
 userTodosRouter.post("/", async (req, res, next) => {
-  const { content } = req.body;
+  const { user_id, content, active } = req.body;
   const todoData = {};
 
   try {
+    todoData.user_id = user_id;
     todoData.content = content;
+    todoData.active = active;
 
     if (!content) {
-      res.send(next(console.error({ message: "Cannot submit empty todo"})))
+      res.send(next(console.error({ message: "Cannot submit empty todo" })));
     }
 
     const newTodo = await createUserTodo(todoData);
@@ -40,14 +43,32 @@ userTodosRouter.post("/", async (req, res, next) => {
       message: "Todo successfully created!",
       newTodo,
     });
-  } catch ({name, message}) { 
+  } catch ({ name, message }) {
     next({
       name: "TodoCreateError",
-      message: "Unable to create Todo"
-    })
+      message: "Unable to create Todo",
+    });
   }
-}
-)
+});
+
+userTodosRouter.patch(":/id", async (req, res, next) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  const updateFields = {};
+  if (content) {
+    updateFields.content = content;
+  }
+
+  try {
+    const updatedTodo = await updateUserTodo(todo.id, updateFields);
+    res.send({ updatedTodo });
+  } catch ({ name, message }) {
+    next({ name: "TodoUpdateError", message: "Unable to update todo info" });
+    console.error(message);
+  }
+});
+
 userTodosRouter.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;

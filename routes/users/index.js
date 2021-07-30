@@ -3,6 +3,22 @@ const express = require("express");
 const usersRouter = express.Router();
 const { getAllUsers, getUserById } = require("../../db/users");
 
+
+// // Import, then initiate Magic instance for server-side methods
+// const { Magic } = require("@magic-sdk/admin");
+// const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+
+// // Route to validate the user's DID token
+// usersRouter.post("/login", async (req, res) => {
+//   try {
+//     const didToken = req.headers.authorization.substr(7);
+//     await magic.token.validate(didToken);
+//     res.status(200).json({ authenticated: true });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
 usersRouter.get("/", async (req, res, next) => {
   try {
     const users = await getAllUsers();
@@ -31,4 +47,6 @@ usersRouter.get("/:id", async (req, res, next) => {
     });
   }
 });
+
+
 module.exports = usersRouter;

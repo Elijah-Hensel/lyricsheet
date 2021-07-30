@@ -34,6 +34,29 @@ async function getAllUserTodos() {
   }
 }
 
+async function updateUserTodo(id, fields = {}) {
+  const setString = Object.keys(fields)
+    .map((key, index) => `"${key}"=$${index + 1}`)
+    .join(", ");
+  try {
+    if (setString.length > 0) {
+      await client.query(
+        `
+        UPDATE products
+        SET ${setString}
+        WHERE id=${id}
+        RETURNING *;
+      `,
+        Object.values(fields)
+      );
+    }
+
+    return await getUserTodosById(id);
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function getUserTodosById(id) {
   try {
     const { rows: todo } = await client.query(
@@ -83,4 +106,5 @@ module.exports = {
   getAllUserTodos,
   getUserTodosById,
   getUserTodosByUserId,
+  updateUserTodo
 };
