@@ -22,6 +22,11 @@ import Utility from "./components/utility/Utility";
 import { grabAllUsers, grabUserByEmail } from "./api";
 import { grabAllNotesNoCat } from "./api";
 import { grabAllUserTodos } from "./api/user_todos";
+import Header from "./components/header/Header"
+import NoteAside from "./components/note_aside/NoteAside";
+import Note from "./components/note/Note"
+import Utility from "./components/utility/Utility";
+
 
 function App() {
   const [authUser, setAuthUser] = useState(true);
@@ -126,7 +131,7 @@ function App() {
           <PrivateRoute path="/dashboard" component={Dashboard} />
         </Switch>
       </Router>
-      {/* <div className="App">
+      <div className="App">
           <Header
             todoActive={todoActive}
             setTodoActive={setTodoActive}
@@ -148,7 +153,7 @@ function App() {
               todos={todos}
               setTodos={setTodos}
             />
-          </div></div> */}
+          </div></div>
     </UserContext.Provider>
   );
 }

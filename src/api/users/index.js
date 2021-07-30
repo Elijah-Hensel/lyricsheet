@@ -10,6 +10,7 @@ export async function grabAllUsers() {
   }
 }
 
+<<<<<<< HEAD
 export async function grabUserByEmail(email) {
   try {
     const { data } = await axios.get(`/api/users/email/${email}`);
@@ -19,3 +20,6 @@ export async function grabUserByEmail(email) {
     throw err;
   }
 }
+=======
+
+>>>>>>> main
