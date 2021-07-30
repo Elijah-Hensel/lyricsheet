@@ -3,7 +3,6 @@ const express = require("express");
 const usersRouter = express.Router();
 const { getAllUsers, getUserById, getUserByEmail } = require("../../db/users");
 
-
 // // Import, then initiate Magic instance for server-side methods
 // const { Magic } = require("@magic-sdk/admin");
 // const magic = new Magic(process.env.MAGIC_SECRET_KEY);
@@ -48,7 +47,6 @@ usersRouter.get("/:id", async (req, res, next) => {
   }
 });
 
-<<<<<<< HEAD
 usersRouter.get("/email/:email", async (req, res, next) => {
   try {
     const { email } = req.params;
@@ -64,7 +62,4 @@ usersRouter.get("/email/:email", async (req, res, next) => {
     });
   }
 });
-=======
-
->>>>>>> main
 module.exports = usersRouter;
