@@ -23,3 +23,18 @@ export async function createTodo(
     throw error;
   }
 }
+
+export async function editTodo(
+  content,
+  active
+) {
+  try {
+    const { data } = await axios.patch(`/api/user-todos/id`, {
+      content,
+      active
+    });
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
