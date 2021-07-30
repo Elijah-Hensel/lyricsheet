@@ -1,7 +1,7 @@
 // code to build and initialize DB goes here
 const bcrypt = require("bcrypt");
 const { client } = require("./index");
-const { createUser, getAllUsers } = require("./users");
+const { createUser, addUserInfo, getAllUsers } = require("./users");
 const { createNoteNoCat } = require("./notes_no_cat");
 const { createUserTodo } = require("./user_todos");
 const { createNotesCategory } = require("./notes_categories");
@@ -22,10 +22,9 @@ async function buildTables() {
   
         CREATE TABLE users(
             id SERIAL PRIMARY KEY,
-            username VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
+            username VARCHAR(255) UNIQUE,
             email VARCHAR(255) UNIQUE NOT NULL,
-            name VARCHAR(255) NOT NULL,
+            name VARCHAR(255),
             admin BOOLEAN DEFAULT FALSE,
             UNIQUE(username, email)
         );
@@ -34,8 +33,8 @@ async function buildTables() {
             id SERIAL PRIMARY KEY,
             user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             gender VARCHAR(10),
-            age INT NOT NULL,
-            birthday DATE NOT NULL,
+            age INT,
+            birthday DATE,
             UNIQUE(user_id)
         );
         
@@ -112,6 +111,44 @@ const createInitialUsers = async () => {
     console.log("Finished creating users!");
   } catch (err) {
     console.error("There was a problem creating USERS");
+    throw err;
+  }
+};
+
+const addInitialUserInfo = async () => {
+  console.log("Starting to add initial user info...");
+  try {
+    let count = 0;
+    const usersToCreate = [
+      {
+        username: "admin",
+        name: "Admin",
+        admin: true,
+      },
+      {
+        username: "BrianPython",
+        name: "Brian Pollygren",
+      },
+      {
+        username: "Shyguy666",
+        name: "Erin Naples",
+      },
+      {
+        username: "Jessica.Troy",
+        name: "Jessica Troy",
+      },
+    ];
+    const users = await Promise.all(
+      usersToCreate.map(async (user) => {
+        const usersWithInfo = await addUserInfo(++count, user);
+        return usersWithInfo;
+      })
+    );
+    console.log("Users Info added:");
+    console.log(users);
+    console.log("Finished adding info to users!");
+  } catch (err) {
+    console.error("There was a problem adding info to USERS");
     throw err;
   }
 };
@@ -287,6 +324,7 @@ async function rebuildDB() {
     client.connect();
     await buildTables();
     await createInitialUsers();
+    await addInitialUserInfo();
     await createInitialNotesNoCat();
     await createInitialUserTodos();
     await createInitialNotesCategories();

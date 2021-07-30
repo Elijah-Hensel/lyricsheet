@@ -9,3 +9,13 @@ export async function grabAllUsers() {
     throw error;
   }
 }
+
+export async function grabUserByEmail(email) {
+  try {
+    const { data } = await axios.get(`/api/users/email/${email}`);
+    return data.user;
+  } catch (err) {
+    console.error("Couldn't grab user by email");
+    throw err;
+  }
+}

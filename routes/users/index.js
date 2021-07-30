@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const usersRouter = express.Router();
-const { getAllUsers, getUserById } = require("../../db/users");
+const { getAllUsers, getUserById, getUserByEmail } = require("../../db/users");
 
 usersRouter.get("/", async (req, res, next) => {
   try {
@@ -28,6 +28,22 @@ usersRouter.get("/:id", async (req, res, next) => {
     next({
       name: "GetUserByIdError",
       message: "Unable to get user with that id",
+    });
+  }
+});
+
+usersRouter.get("/email/:email", async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    const user = await getUserByEmail(email);
+    res.send({
+      message: `User With email '${email}' Grabbed`,
+      user,
+    });
+  } catch ({ name, message }) {
+    next({
+      name: "GetUserByEmailError",
+      message: "Unable to get user with that email",
     });
   }
 });
