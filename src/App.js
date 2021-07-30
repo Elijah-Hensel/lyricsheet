@@ -13,14 +13,15 @@ import Authenticate from "./components/Authenticate";
 import Dashboard from "./components/DashBoard";
 import PrivateRoute from "./components/PrivateRoute";
 import Landing from "./components/landing/Landing";
-import { grabAllUsers } from "./api";
+import NavBar from "./components/NavBar/NavBar";
+import Main from "./components/Main/Main";
+import Header from "./components/header/Header";
+import NoteAside from "./components/note_aside/NoteAside";
+import Note from "./components/note/Note";
+import Utility from "./components/utility/Utility";
+import { grabAllUsers, grabUserByEmail } from "./api";
 import { grabAllNotesNoCat } from "./api";
 import { grabAllUserTodos } from "./api/user_todos";
-import Header from "./components/header/Header"
-import NoteAside from "./components/note_aside/NoteAside";
-import Note from "./components/note/Note"
-import Utility from "./components/utility/Utility";
-
 
 function App() {
   const [authUser, setAuthUser] = useState(true);
@@ -31,34 +32,8 @@ function App() {
   const [grabbedNotesNoCat, setGrabbedNotesNoCat] = useState("");
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState({ isLoggedIn: null, email: "" });
+  const [currentUser, setCurrentUser] = useState({});
   const [loading, setLoading] = useState();
-
-  useEffect(() => {
-    grabAllUserTodos()
-      .then(({ todos }) => {
-        setTodos(todos);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
-  useEffect(() => {
-    const validateUser = async () => {
-      setLoading(true);
-      try {
-        await checkUser(setUser);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    validateUser();
-  }, [user.isLoggedIn]);
-
-  useEffect(() => {
-    user.isLoggedIn ? setAuthUser(true) : setAuthUser(false);
-  }, [user.isLoggedIn]);
 
   async function getAllGrabbedNotesNoCat() {
     try {
@@ -80,10 +55,55 @@ function App() {
     }
   }
 
+  async function createNewUserAfterSignUp(user) {
+    try {
+      if (currentUser.length > 1) {
+        return;
+      }
+
+      if (user.email) {
+        const userWithInfo = await grabUserByEmail(user.email);
+        console.log(userWithInfo, "USER WITH INFO");
+        setCurrentUser("USERWITHINFO");
+        console.log(currentUser, "CURRENT USER");
+      }
+    } catch (err) {
+      console.error("COULD NOT CREATE NEW USER AFTER SIGN UP");
+      throw err;
+    }
+  }
+
   useEffect(() => {
     getAllGrabbedNotesNoCat();
     getAllGrabbedUsers();
   }, [setGrabbedNotesNoCat]);
+
+  useEffect(() => {
+    grabAllUserTodos()
+      .then(({ todos }) => {
+        setTodos(todos);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const validateUser = async () => {
+      setLoading(true);
+      try {
+        await checkUser(setUser);
+        setLoading(false);
+        console.log(user, "MAGIC USER");
+        await createNewUserAfterSignUp(user);
+
+        console.log(currentUser, "CURRENT USER");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    validateUser();
+  }, [user.isLoggedIn]);
 
   if (loading) {
     return (
@@ -99,7 +119,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <Router>
-        {user.isLoggedIn ? <Redirect to={{ pathname: "/dashboard" }} /> : null}
+        {user.isLoggedIn && <Redirect to={{ pathname: "/dashboard" }} />}
         <Switch>
           <Route exact path="/" component={Landing} />
           <Route exact path="/login" component={Authenticate} />
@@ -107,28 +127,29 @@ function App() {
         </Switch>
       </Router>
       <div className="App">
-          <Header
+        <Header
+          todoActive={todoActive}
+          setTodoActive={setTodoActive}
+          lookUpActive={lookUpActive}
+          setLookUpActive={setLookUpActive}
+          utilityIsOpen={utilityIsOpen}
+          setUtilityIsOpen={setUtilityIsOpen}
+        />
+        <div className="main-note-container">
+          <NoteAside grabbedNotesNoCat={grabbedNotesNoCat} />
+          <Note />
+          <Utility
             todoActive={todoActive}
             setTodoActive={setTodoActive}
             lookUpActive={lookUpActive}
             setLookUpActive={setLookUpActive}
             utilityIsOpen={utilityIsOpen}
             setUtilityIsOpen={setUtilityIsOpen}
+            todos={todos}
+            setTodos={setTodos}
           />
-          <div className="main-note-container">
-            <NoteAside grabbedNotesNoCat={grabbedNotesNoCat} />
-            <Note />
-            <Utility
-              todoActive={todoActive}
-              setTodoActive={setTodoActive}
-              lookUpActive={lookUpActive}
-              setLookUpActive={setLookUpActive}
-              utilityIsOpen={utilityIsOpen}
-              setUtilityIsOpen={setUtilityIsOpen}
-              todos={todos}
-              setTodos={setTodos}
-            />
-          </div></div>
+        </div>
+      </div>
     </UserContext.Provider>
   );
 }
